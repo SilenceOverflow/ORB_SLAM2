@@ -26,11 +26,9 @@
 #include <opencv/cv.h>
 
 
-namespace ORB_SLAM2
-{
-
-class ExtractorNode
-{
+namespace ORB_SLAM2 {
+// quad tree
+class ExtractorNode {
 public:
     ExtractorNode():bNoMore(false){}
 
@@ -42,11 +40,10 @@ public:
     bool bNoMore;
 };
 
-class ORBextractor
-{
+class ORBextractor {
 public:
     
-    enum {HARRIS_SCORE=0, FAST_SCORE=1 };
+    // enum {HARRIS_SCORE=0, FAST_SCORE=1 };
 
     ORBextractor(int nfeatures, float scaleFactor, int nlevels,
                  int iniThFAST, int minThFAST);
@@ -60,25 +57,27 @@ public:
       std::vector<cv::KeyPoint>& keypoints,
       cv::OutputArray descriptors);
 
-    int inline GetLevels(){
-        return nlevels;}
+    int inline GetLevels() {
+        return nlevels;
+    }
 
-    float inline GetScaleFactor(){
-        return scaleFactor;}
+    float inline GetScaleFactor() {
+        return scaleFactor;
+    }
 
-    std::vector<float> inline GetScaleFactors(){
+    std::vector<float> inline GetScaleFactors() {
         return mvScaleFactor;
     }
 
-    std::vector<float> inline GetInverseScaleFactors(){
+    std::vector<float> inline GetInverseScaleFactors() {
         return mvInvScaleFactor;
     }
 
-    std::vector<float> inline GetScaleSigmaSquares(){
+    std::vector<float> inline GetScaleSigmaSquares() {
         return mvLevelSigma2;
     }
 
-    std::vector<float> inline GetInverseScaleSigmaSquares(){
+    std::vector<float> inline GetInverseScaleSigmaSquares() {
         return mvInvLevelSigma2;
     }
 

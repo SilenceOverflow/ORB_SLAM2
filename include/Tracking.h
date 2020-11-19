@@ -25,15 +25,15 @@
 #include<opencv2/core/core.hpp>
 #include<opencv2/features2d/features2d.hpp>
 
-#include"Viewer.h"
-#include"FrameDrawer.h"
-#include"Map.h"
-#include"LocalMapping.h"
-#include"LoopClosing.h"
-#include"Frame.h"
+#include "Viewer.h"
+#include "FrameDrawer.h"
+#include "Map.h"
+#include "LocalMapping.h"
+#include "LoopClosing.h"
+#include "Frame.h"
 #include "ORBVocabulary.h"
-#include"KeyFrameDatabase.h"
-#include"ORBextractor.h"
+#include "KeyFrameDatabase.h"
+#include "ORBextractor.h"
 #include "Initializer.h"
 #include "MapDrawer.h"
 #include "System.h"
@@ -156,7 +156,7 @@ protected:
 
     //ORB
     ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
-    ORBextractor* mpIniORBextractor;
+    ORBextractor* mpIniORBextractor;    // only for init stage or no image yet cases
 
     //BoW
     ORBVocabulary* mpORBVocabulary;
@@ -184,7 +184,7 @@ protected:
     //Calibration matrix
     cv::Mat mK;
     cv::Mat mDistCoef;
-    float mbf;
+    float mbf;              // stereo baseline times fx
 
     //New KeyFrame rules (according to fps)
     int mMinFrames;
@@ -192,7 +192,7 @@ protected:
 
     // Threshold close/far points
     // Points seen as close by the stereo/RGBD sensor are considered reliable
-    // and inserted from just one frame. Far points requiere a match in two keyframes.
+    // and inserted from just one frame. Far points require a match in two keyframes.
     float mThDepth;
 
     // For RGB-D inputs only. For some datasets (e.g. TUM) the depthmap values are scaled.
