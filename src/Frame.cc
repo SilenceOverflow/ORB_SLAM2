@@ -47,8 +47,7 @@ Frame::Frame(const Frame &frame)
      mpReferenceKF(frame.mpReferenceKF), mnScaleLevels(frame.mnScaleLevels),
      mfScaleFactor(frame.mfScaleFactor), mfLogScaleFactor(frame.mfLogScaleFactor),
      mvScaleFactors(frame.mvScaleFactors), mvInvScaleFactors(frame.mvInvScaleFactors),
-     mvLevelSigma2(frame.mvLevelSigma2), mvInvLevelSigma2(frame.mvInvLevelSigma2)
-{
+     mvLevelSigma2(frame.mvLevelSigma2), mvInvLevelSigma2(frame.mvInvLevelSigma2) {
     for(int i=0;i<FRAME_GRID_COLS;i++)
         for(int j=0; j<FRAME_GRID_ROWS; j++)
             mGrid[i][j]=frame.mGrid[i][j];
@@ -319,11 +318,11 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit)
     return true;
 }
 
-vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel, const int maxLevel) const
-{
+vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel, const int maxLevel) const {
     vector<size_t> vIndices;
     vIndices.reserve(N);
 
+    // border check with window size r
     const int nMinCellX = max(0,(int)floor((x-mnMinX-r)*mfGridElementWidthInv));
     if(nMinCellX>=FRAME_GRID_COLS)
         return vIndices;
@@ -342,19 +341,15 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const f
 
     const bool bCheckLevels = (minLevel>0) || (maxLevel>=0);
 
-    for(int ix = nMinCellX; ix<=nMaxCellX; ix++)
-    {
-        for(int iy = nMinCellY; iy<=nMaxCellY; iy++)
-        {
+    for(int ix = nMinCellX; ix<=nMaxCellX; ix++) {
+        for(int iy = nMinCellY; iy<=nMaxCellY; iy++) {
             const vector<size_t> vCell = mGrid[ix][iy];
             if(vCell.empty())
                 continue;
 
-            for(size_t j=0, jend=vCell.size(); j<jend; j++)
-            {
+            for(size_t j=0, jend=vCell.size(); j<jend; j++) {
                 const cv::KeyPoint &kpUn = mvKeysUn[vCell[j]];
-                if(bCheckLevels)
-                {
+                if(bCheckLevels) {
                     if(kpUn.octave<minLevel)
                         continue;
                     if(maxLevel>=0)

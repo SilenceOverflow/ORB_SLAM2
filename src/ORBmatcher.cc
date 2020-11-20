@@ -402,8 +402,7 @@ int ORBmatcher::SearchByProjection(KeyFrame* pKF, cv::Mat Scw, const vector<MapP
     return nmatches;
 }
 
-int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2, vector<cv::Point2f> &vbPrevMatched, vector<int> &vnMatches12, int windowSize)
-{
+int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2, vector<cv::Point2f> &vbPrevMatched, vector<int> &vnMatches12, int windowSize) {
     int nmatches=0;
     vnMatches12 = vector<int>(F1.mvKeysUn.size(),-1);
 
@@ -415,13 +414,13 @@ int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2, vector<cv::Point2f
     vector<int> vMatchedDistance(F2.mvKeysUn.size(),INT_MAX);
     vector<int> vnMatches21(F2.mvKeysUn.size(),-1);
 
-    for(size_t i1=0, iend1=F1.mvKeysUn.size(); i1<iend1; i1++)
-    {
+    for(size_t i1=0, iend1=F1.mvKeysUn.size(); i1<iend1; i1++) {
         cv::KeyPoint kp1 = F1.mvKeysUn[i1];
         int level1 = kp1.octave;
         if(level1>0)
             continue;
-
+        
+        // perform feature matching only on level 0
         vector<size_t> vIndices2 = F2.GetFeaturesInArea(vbPrevMatched[i1].x,vbPrevMatched[i1].y, windowSize,level1,level1);
 
         if(vIndices2.empty())
@@ -433,35 +432,28 @@ int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2, vector<cv::Point2f
         int bestDist2 = INT_MAX;
         int bestIdx2 = -1;
 
-        for(vector<size_t>::iterator vit=vIndices2.begin(); vit!=vIndices2.end(); vit++)
-        {
+        for(vector<size_t>::iterator vit=vIndices2.begin(); vit!=vIndices2.end(); vit++) {
             size_t i2 = *vit;
-
             cv::Mat d2 = F2.mDescriptors.row(i2);
-
             int dist = DescriptorDistance(d1,d2);
 
             if(vMatchedDistance[i2]<=dist)
                 continue;
 
-            if(dist<bestDist)
-            {
+            if(dist<bestDist) {
                 bestDist2=bestDist;
                 bestDist=dist;
                 bestIdx2=i2;
-            }
-            else if(dist<bestDist2)
-            {
+            } else if(dist<bestDist2) {
                 bestDist2=dist;
             }
         }
 
-        if(bestDist<=TH_LOW)
-        {
-            if(bestDist<(float)bestDist2*mfNNratio)
-            {
-                if(vnMatches21[bestIdx2]>=0)
-                {
+        // good matching should pass bestDist <= TH_LOW, 
+        // as well as less than bestDist2*mfNNratio
+        if(bestDist<=TH_LOW) {
+            if(bestDist<(float)bestDist2*mfNNratio) {
+                if(vnMatches21[bestIdx2]>=0) {
                     vnMatches12[vnMatches21[bestIdx2]]=-1;
                     nmatches--;
                 }
@@ -470,8 +462,7 @@ int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2, vector<cv::Point2f
                 vMatchedDistance[bestIdx2]=bestDist;
                 nmatches++;
 
-                if(mbCheckOrientation)
-                {
+                if(mbCheckOrientation) {
                     float rot = F1.mvKeysUn[i1].angle-F2.mvKeysUn[bestIdx2].angle;
                     if(rot<0.0)
                         rot+=360.0f;
@@ -483,32 +474,27 @@ int ORBmatcher::SearchForInitialization(Frame &F1, Frame &F2, vector<cv::Point2f
                 }
             }
         }
-
     }
 
-    if(mbCheckOrientation)
-    {
+    // kick out matches whose rot diff are not in the most frequent 3 bins
+    if(mbCheckOrientation) {
         int ind1=-1;
         int ind2=-1;
         int ind3=-1;
 
         ComputeThreeMaxima(rotHist,HISTO_LENGTH,ind1,ind2,ind3);
 
-        for(int i=0; i<HISTO_LENGTH; i++)
-        {
+        for(int i=0; i<HISTO_LENGTH; i++) {
             if(i==ind1 || i==ind2 || i==ind3)
                 continue;
-            for(size_t j=0, jend=rotHist[i].size(); j<jend; j++)
-            {
+            for(size_t j=0, jend=rotHist[i].size(); j<jend; j++) {
                 int idx1 = rotHist[i][j];
-                if(vnMatches12[idx1]>=0)
-                {
+                if(vnMatches12[idx1]>=0) {
                     vnMatches12[idx1]=-1;
                     nmatches--;
                 }
             }
         }
-
     }
 
     //Update prev matched
@@ -1598,45 +1584,35 @@ int ORBmatcher::SearchByProjection(Frame &CurrentFrame, KeyFrame *pKF, const set
     return nmatches;
 }
 
-void ORBmatcher::ComputeThreeMaxima(vector<int>* histo, const int L, int &ind1, int &ind2, int &ind3)
-{
+void ORBmatcher::ComputeThreeMaxima(vector<int>* histo, const int L, int &ind1, int &ind2, int &ind3) {
     int max1=0;
     int max2=0;
     int max3=0;
 
-    for(int i=0; i<L; i++)
-    {
+    for(int i=0; i<L; i++) {
         const int s = histo[i].size();
-        if(s>max1)
-        {
+        if(s>max1) {
             max3=max2;
             max2=max1;
             max1=s;
             ind3=ind2;
             ind2=ind1;
             ind1=i;
-        }
-        else if(s>max2)
-        {
+        } else if(s>max2) {
             max3=max2;
             max2=s;
             ind3=ind2;
             ind2=i;
-        }
-        else if(s>max3)
-        {
+        } else if(s>max3) {
             max3=s;
             ind3=i;
         }
     }
 
-    if(max2<0.1f*(float)max1)
-    {
+    if(max2<0.1f*(float)max1) {
         ind2=-1;
         ind3=-1;
-    }
-    else if(max3<0.1f*(float)max1)
-    {
+    } else if(max3<0.1f*(float)max1) {
         ind3=-1;
     }
 }
@@ -1644,15 +1620,13 @@ void ORBmatcher::ComputeThreeMaxima(vector<int>* histo, const int L, int &ind1, 
 
 // Bit set count operation from
 // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
-int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
-{
+int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b) {
     const int *pa = a.ptr<int32_t>();
     const int *pb = b.ptr<int32_t>();
 
     int dist=0;
 
-    for(int i=0; i<8; i++, pa++, pb++)
-    {
+    for(int i=0; i<8; i++, pa++, pb++) {
         unsigned  int v = *pa ^ *pb;
         v = v - ((v >> 1) & 0x55555555);
         v = (v & 0x33333333) + ((v >> 2) & 0x33333333);

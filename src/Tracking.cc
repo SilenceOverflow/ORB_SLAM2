@@ -265,8 +265,7 @@ void Tracking::Track()
     // Get Map Mutex -> Map cannot be changed
     unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
 
-    if(mState==NOT_INITIALIZED)
-    {
+    if(mState==NOT_INITIALIZED) {
         if(mSensor==System::STEREO || mSensor==System::RGBD)
             StereoInitialization();
         else
@@ -549,14 +548,10 @@ void Tracking::StereoInitialization()
     }
 }
 
-void Tracking::MonocularInitialization()
-{
-
-    if(!mpInitializer)
-    {
+void Tracking::MonocularInitialization() {
+    if(!mpInitializer) {
         // Set Reference Frame
-        if(mCurrentFrame.mvKeys.size()>100)
-        {
+        if(mCurrentFrame.mvKeys.size()>100) {
             mInitialFrame = Frame(mCurrentFrame);
             mLastFrame = Frame(mCurrentFrame);
             mvbPrevMatched.resize(mCurrentFrame.mvKeysUn.size());
@@ -572,12 +567,9 @@ void Tracking::MonocularInitialization()
 
             return;
         }
-    }
-    else
-    {
+    } else {
         // Try to initialize
-        if((int)mCurrentFrame.mvKeys.size()<=100)
-        {
+        if((int)mCurrentFrame.mvKeys.size()<=100) {
             delete mpInitializer;
             mpInitializer = static_cast<Initializer*>(NULL);
             fill(mvIniMatches.begin(),mvIniMatches.end(),-1);
@@ -589,8 +581,7 @@ void Tracking::MonocularInitialization()
         int nmatches = matcher.SearchForInitialization(mInitialFrame,mCurrentFrame,mvbPrevMatched,mvIniMatches,100);
 
         // Check if there are enough correspondences
-        if(nmatches<100)
-        {
+        if(nmatches<100) {
             delete mpInitializer;
             mpInitializer = static_cast<Initializer*>(NULL);
             return;
@@ -600,12 +591,9 @@ void Tracking::MonocularInitialization()
         cv::Mat tcw; // Current Camera Translation
         vector<bool> vbTriangulated; // Triangulated Correspondences (mvIniMatches)
 
-        if(mpInitializer->Initialize(mCurrentFrame, mvIniMatches, Rcw, tcw, mvIniP3D, vbTriangulated))
-        {
-            for(size_t i=0, iend=mvIniMatches.size(); i<iend;i++)
-            {
-                if(mvIniMatches[i]>=0 && !vbTriangulated[i])
-                {
+        if(mpInitializer->Initialize(mCurrentFrame, mvIniMatches, Rcw, tcw, mvIniP3D, vbTriangulated)) {
+            for(size_t i=0, iend=mvIniMatches.size(); i<iend;i++) {
+                if(mvIniMatches[i]>=0 && !vbTriangulated[i]) {
                     mvIniMatches[i]=-1;
                     nmatches--;
                 }

@@ -30,21 +30,18 @@ void DUtils::Random::SeedRandOnce()
   }
 }
 
-void DUtils::Random::SeedRand(int seed)
-{
+void DUtils::Random::SeedRand(int seed) {
 	srand(seed); 
 }
 
-void DUtils::Random::SeedRandOnce(int seed)
-{
-  if(!m_already_seeded)
-  {
+void DUtils::Random::SeedRandOnce(int seed) {
+  if(!m_already_seeded) {
     DUtils::Random::SeedRand(seed);
     m_already_seeded = true;
   }
 }
 
-int DUtils::Random::RandomInt(int min, int max){
+int DUtils::Random::RandomInt(int min, int max) {
 	int d = max - min + 1;
 	return int(((double)rand()/((double)RAND_MAX + 1.0)) * d) + min;
 }
