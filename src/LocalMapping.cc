@@ -111,8 +111,7 @@ void LocalMapping::Run()
     SetFinish();
 }
 
-void LocalMapping::InsertKeyFrame(KeyFrame *pKF)
-{
+void LocalMapping::InsertKeyFrame(KeyFrame *pKF) {
     unique_lock<mutex> lock(mMutexNewKFs);
     mlNewKeyFrames.push_back(pKF);
     mbAbortBA=true;
@@ -702,15 +701,13 @@ cv::Mat LocalMapping::SkewSymmetricMatrix(const cv::Mat &v)
             -v.at<float>(1),  v.at<float>(0),              0);
 }
 
-void LocalMapping::RequestReset()
-{
+void LocalMapping::RequestReset() {
     {
         unique_lock<mutex> lock(mMutexReset);
         mbResetRequested = true;
     }
 
-    while(1)
-    {
+    while(1) {
         {
             unique_lock<mutex> lock2(mMutexReset);
             if(!mbResetRequested)

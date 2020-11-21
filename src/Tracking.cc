@@ -611,12 +611,10 @@ void Tracking::MonocularInitialization() {
     }
 }
 
-void Tracking::CreateInitialMapMonocular()
-{
+void Tracking::CreateInitialMapMonocular() {
     // Create KeyFrames
     KeyFrame* pKFini = new KeyFrame(mInitialFrame,mpMap,mpKeyFrameDB);
     KeyFrame* pKFcur = new KeyFrame(mCurrentFrame,mpMap,mpKeyFrameDB);
-
 
     pKFini->ComputeBoW();
     pKFcur->ComputeBoW();
@@ -624,10 +622,10 @@ void Tracking::CreateInitialMapMonocular()
     // Insert KFs in the map
     mpMap->AddKeyFrame(pKFini);
     mpMap->AddKeyFrame(pKFcur);
+    // std::cout << "mpMap->GetMaxKFid(): " << mpMap->GetMaxKFid() << std::endl;
 
     // Create MapPoints and asscoiate to keyframes
-    for(size_t i=0; i<mvIniMatches.size();i++)
-    {
+    for(size_t i=0; i<mvIniMatches.size();i++) {
         if(mvIniMatches[i]<0)
             continue;
 
@@ -642,7 +640,9 @@ void Tracking::CreateInitialMapMonocular()
         pMP->AddObservation(pKFini,i);
         pMP->AddObservation(pKFcur,mvIniMatches[i]);
 
-        pMP->ComputeDistinctiveDescriptors();
+        // Retrieve all observed descriptors, and
+        // Take the descriptor with least median distance as the best
+        pMP->ComputeDistinctiveDescriptors(); 
         pMP->UpdateNormalAndDepth();
 
         //Fill Current Frame structure
@@ -659,15 +659,15 @@ void Tracking::CreateInitialMapMonocular()
 
     // Bundle Adjustment
     cout << "New Map created with " << mpMap->MapPointsInMap() << " points" << endl;
+    cout << "New Map created with " << mpMap->KeyFramesInMap() << " keyframes" << endl;
 
-    Optimizer::GlobalBundleAdjustemnt(mpMap,20);
+    Optimizer::GlobalBundleAdjustemnt(mpMap, 20);
 
     // Set median depth to 1
     float medianDepth = pKFini->ComputeSceneMedianDepth(2);
     float invMedianDepth = 1.0f/medianDepth;
 
-    if(medianDepth<0 || pKFcur->TrackedMapPoints(1)<100)
-    {
+    if(medianDepth<0 || pKFcur->TrackedMapPoints(1)<100) {
         cout << "Wrong initialization, reseting..." << endl;
         Reset();
         return;
@@ -680,10 +680,8 @@ void Tracking::CreateInitialMapMonocular()
 
     // Scale points
     vector<MapPoint*> vpAllMapPoints = pKFini->GetMapPointMatches();
-    for(size_t iMP=0; iMP<vpAllMapPoints.size(); iMP++)
-    {
-        if(vpAllMapPoints[iMP])
-        {
+    for(size_t iMP=0; iMP<vpAllMapPoints.size(); iMP++) {
+        if(vpAllMapPoints[iMP]) {
             MapPoint* pMP = vpAllMapPoints[iMP];
             pMP->SetWorldPos(pMP->GetWorldPos()*invMedianDepth);
         }
@@ -693,12 +691,12 @@ void Tracking::CreateInitialMapMonocular()
     mpLocalMapper->InsertKeyFrame(pKFcur);
 
     mCurrentFrame.SetPose(pKFcur->GetPose());
-    mnLastKeyFrameId=mCurrentFrame.mnId;
+    mnLastKeyFrameId = mCurrentFrame.mnId;
     mpLastKeyFrame = pKFcur;
 
     mvpLocalKeyFrames.push_back(pKFcur);
     mvpLocalKeyFrames.push_back(pKFini);
-    mvpLocalMapPoints=mpMap->GetAllMapPoints();
+    mvpLocalMapPoints = mpMap->GetAllMapPoints();
     mpReferenceKF = pKFcur;
     mCurrentFrame.mpReferenceKF = pKFcur;
 
@@ -711,7 +709,7 @@ void Tracking::CreateInitialMapMonocular()
     mpMap->mvpKeyFrameOrigins.push_back(pKFini);
 
     mState=OK;
-}
+} /* end of CreateInitialMapMonocular() */
 
 void Tracking::CheckReplacedInLastFrame()
 {
@@ -1478,12 +1476,9 @@ bool Tracking::Relocalization()
 
 }
 
-void Tracking::Reset()
-{
-
+void Tracking::Reset() {
     cout << "System Reseting" << endl;
-    if(mpViewer)
-    {
+    if(mpViewer) {
         mpViewer->RequestStop();
         while(!mpViewer->isStopped())
             usleep(3000);

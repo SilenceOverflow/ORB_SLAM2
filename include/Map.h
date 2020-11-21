@@ -44,7 +44,7 @@ public:
     void AddMapPoint(MapPoint* pMP);
     void EraseMapPoint(MapPoint* pMP);
     void EraseKeyFrame(KeyFrame* pKF);
-    void SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs);
+    void SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs);   // set by Tracking
     void InformNewBigChange();
     int GetLastBigChangeIdx();
 
@@ -57,20 +57,22 @@ public:
 
     long unsigned int GetMaxKFid();
 
+    // Clear Map (this erase MapPoints and KeyFrames)
     void clear();
 
-    vector<KeyFrame*> mvpKeyFrameOrigins;
+    vector<KeyFrame*> mvpKeyFrameOrigins;    // set by Init in Tracking
 
     std::mutex mMutexMapUpdate;
 
     // This avoid that two points are created simultaneously in separate threads (id conflict)
+    // MapPoints can be created from Tracking and Local Mapping.
     std::mutex mMutexPointCreation;
 
 protected:
     std::set<MapPoint*> mspMapPoints;
     std::set<KeyFrame*> mspKeyFrames;
 
-    std::vector<MapPoint*> mvpReferenceMapPoints;
+    std::vector<MapPoint*> mvpReferenceMapPoints;   // set by Tracking
 
     long unsigned int mnMaxKFid;
 

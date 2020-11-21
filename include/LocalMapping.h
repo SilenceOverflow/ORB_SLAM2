@@ -104,7 +104,7 @@ protected:
     LoopClosing* mpLoopCloser;
     Tracking* mpTracker;
 
-    std::list<KeyFrame*> mlNewKeyFrames;
+    std::list<KeyFrame*> mlNewKeyFrames;    // buffer of new kfs from tracking
 
     KeyFrame* mpCurrentKeyFrame;
 

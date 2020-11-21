@@ -149,7 +149,7 @@ public:
     float mRelocScore;
 
     // Variables used by loop closing
-    cv::Mat mTcwGBA;
+    cv::Mat mTcwGBA;    //set after Optimizer::BundleAdjustment
     cv::Mat mTcwBefGBA;
     long unsigned int mnBAGlobalForKF;
 
@@ -193,9 +193,9 @@ public:
 protected:
 
     // SE3 Pose and camera center
-    cv::Mat Tcw;
-    cv::Mat Twc;
-    cv::Mat Ow;
+    cv::Mat Tcw;   // cam pose in world coordinate, Tcw * Pw = Pc
+    cv::Mat Twc;   
+    cv::Mat Ow;    // Tcw * Ow = [0, 0, 0]^T in cam coordinate
 
     cv::Mat Cw; // Stereo middel point. Only for visualization
 
@@ -208,7 +208,7 @@ protected:
 
     // Grid over the image to speed up feature matching
     std::vector< std::vector <std::vector<size_t> > > mGrid;
-
+    // Covisibles
     std::map<KeyFrame*,int> mConnectedKeyFrameWeights;
     std::vector<KeyFrame*> mvpOrderedConnectedKeyFrames;
     std::vector<int> mvOrderedWeights;

@@ -613,15 +613,13 @@ void LoopClosing::SearchAndFuse(const KeyFrameAndPose &CorrectedPosesMap)
 }
 
 
-void LoopClosing::RequestReset()
-{
+void LoopClosing::RequestReset() {
     {
         unique_lock<mutex> lock(mMutexReset);
         mbResetRequested = true;
     }
 
-    while(1)
-    {
+    while(1) {
         {
         unique_lock<mutex> lock2(mMutexReset);
         if(!mbResetRequested)
@@ -675,6 +673,7 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
 
             // Correct keyframes starting at map first keyframe
             list<KeyFrame*> lpKFtoCheck(mpMap->mvpKeyFrameOrigins.begin(),mpMap->mvpKeyFrameOrigins.end());
+            cout << "len mvpKeyFrameOrigins: " << mpMap->mvpKeyFrameOrigins.size() << endl;
 
             while(!lpKFtoCheck.empty())
             {

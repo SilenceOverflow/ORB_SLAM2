@@ -86,7 +86,7 @@ public:
     static long unsigned int nNextId;
     long int mnFirstKFid;
     long int mnFirstFrame;
-    int nObs;
+    int nObs;   // num of kfs it could be observed
 
     // Variables used by the tracking
     float mTrackProjX;
