@@ -114,7 +114,7 @@ void LocalMapping::Run()
 void LocalMapping::InsertKeyFrame(KeyFrame *pKF) {
     unique_lock<mutex> lock(mMutexNewKFs);
     mlNewKeyFrames.push_back(pKF);
-    mbAbortBA=true;
+    mbAbortBA = true;
 }
 
 
@@ -572,14 +572,12 @@ bool LocalMapping::Stop()
     return false;
 }
 
-bool LocalMapping::isStopped()
-{
+bool LocalMapping::isStopped() {
     unique_lock<mutex> lock(mMutexStop);
     return mbStopped;
 }
 
-bool LocalMapping::stopRequested()
-{
+bool LocalMapping::stopRequested() {
     unique_lock<mutex> lock(mMutexStop);
     return mbStopRequested;
 }
@@ -599,8 +597,7 @@ void LocalMapping::Release()
     cout << "Local Mapping RELEASE" << endl;
 }
 
-bool LocalMapping::AcceptKeyFrames()
-{
+bool LocalMapping::AcceptKeyFrames() {
     unique_lock<mutex> lock(mMutexAccept);
     return mbAcceptKeyFrames;
 }
@@ -611,8 +608,7 @@ void LocalMapping::SetAcceptKeyFrames(bool flag)
     mbAcceptKeyFrames=flag;
 }
 
-bool LocalMapping::SetNotStop(bool flag)
-{
+bool LocalMapping::SetNotStop(bool flag) {
     unique_lock<mutex> lock(mMutexStop);
 
     if(flag && mbStopped)
@@ -623,8 +619,7 @@ bool LocalMapping::SetNotStop(bool flag)
     return true;
 }
 
-void LocalMapping::InterruptBA()
-{
+void LocalMapping::InterruptBA() {
     mbAbortBA = true;
 }
 

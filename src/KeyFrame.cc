@@ -151,11 +151,10 @@ void KeyFrame::UpdateBestCovisibles() {
     mvOrderedWeights = vector<int>(lWs.begin(), lWs.end());    
 }
 
-set<KeyFrame*> KeyFrame::GetConnectedKeyFrames()
-{
+set<KeyFrame*> KeyFrame::GetConnectedKeyFrames() {
     unique_lock<mutex> lock(mMutexConnections);
     set<KeyFrame*> s;
-    for(map<KeyFrame*,int>::iterator mit=mConnectedKeyFrameWeights.begin();mit!=mConnectedKeyFrameWeights.end();mit++)
+    for(map<KeyFrame*,int>::iterator mit = mConnectedKeyFrameWeights.begin(); mit != mConnectedKeyFrameWeights.end(); mit++)
         s.insert(mit->first);
     return s;
 }
@@ -166,14 +165,12 @@ vector<KeyFrame*> KeyFrame::GetVectorCovisibleKeyFrames()
     return mvpOrderedConnectedKeyFrames;
 }
 
-vector<KeyFrame*> KeyFrame::GetBestCovisibilityKeyFrames(const int &N)
-{
+vector<KeyFrame*> KeyFrame::GetBestCovisibilityKeyFrames(const int &N) {
     unique_lock<mutex> lock(mMutexConnections);
     if((int)mvpOrderedConnectedKeyFrames.size()<N)
         return mvpOrderedConnectedKeyFrames;
     else
-        return vector<KeyFrame*>(mvpOrderedConnectedKeyFrames.begin(),mvpOrderedConnectedKeyFrames.begin()+N);
-
+        return vector<KeyFrame*>(mvpOrderedConnectedKeyFrames.begin(), mvpOrderedConnectedKeyFrames.begin()+N);
 }
 
 vector<KeyFrame*> KeyFrame::GetCovisiblesByWeight(const int &w)
@@ -374,14 +371,12 @@ void KeyFrame::ChangeParent(KeyFrame *pKF)
     pKF->AddChild(this);
 }
 
-set<KeyFrame*> KeyFrame::GetChilds()
-{
+set<KeyFrame*> KeyFrame::GetChilds() {
     unique_lock<mutex> lockCon(mMutexConnections);
     return mspChildrens;
 }
 
-KeyFrame* KeyFrame::GetParent()
-{
+KeyFrame* KeyFrame::GetParent() {
     unique_lock<mutex> lockCon(mMutexConnections);
     return mpParent;
 }

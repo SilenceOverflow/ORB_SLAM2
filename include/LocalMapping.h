@@ -114,7 +114,7 @@ protected:
 
     bool mbAbortBA;
 
-    bool mbStopped;
+    bool mbStopped;         // YJTODO:: diff?
     bool mbStopRequested;
     bool mbNotStop;
     std::mutex mMutexStop;

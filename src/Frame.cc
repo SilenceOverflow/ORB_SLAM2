@@ -260,27 +260,26 @@ void Frame::UpdatePoseMatrices()
     mOw = -mRcw.t()*mtcw;
 }
 
-bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit)
-{
+bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit) {
     pMP->mbTrackInView = false;
 
     // 3D in absolute coordinates
     cv::Mat P = pMP->GetWorldPos(); 
 
     // 3D in camera coordinates
-    const cv::Mat Pc = mRcw*P+mtcw;
+    const cv::Mat Pc = mRcw * P + mtcw;
     const float &PcX = Pc.at<float>(0);
     const float &PcY= Pc.at<float>(1);
     const float &PcZ = Pc.at<float>(2);
 
     // Check positive depth
-    if(PcZ<0.0f)
+    if(PcZ < 0.0f)
         return false;
 
     // Project in image and check it is not outside
     const float invz = 1.0f/PcZ;
-    const float u=fx*PcX*invz+cx;
-    const float v=fy*PcY*invz+cy;
+    const float u = fx * PcX * invz + cx;
+    const float v = fy * PcY * invz + cy;
 
     if(u<mnMinX || u>mnMaxX)
         return false;
@@ -290,7 +289,7 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit)
     // Check distance is in the scale invariance region of the MapPoint
     const float maxDistance = pMP->GetMaxDistanceInvariance();
     const float minDistance = pMP->GetMinDistanceInvariance();
-    const cv::Mat PO = P-mOw;
+    const cv::Mat PO = P - mOw;
     const float dist = cv::norm(PO);
 
     if(dist<minDistance || dist>maxDistance)
@@ -301,11 +300,11 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit)
 
     const float viewCos = PO.dot(Pn)/dist;
 
-    if(viewCos<viewingCosLimit)
+    if(viewCos < viewingCosLimit)
         return false;
 
     // Predict scale in the image
-    const int nPredictedLevel = pMP->PredictScale(dist,this);
+    const int nPredictedLevel = pMP->PredictScale(dist, this);
 
     // Data used by the tracking
     pMP->mbTrackInView = true;
@@ -381,10 +380,8 @@ bool Frame::PosInGrid(const cv::KeyPoint &kp, int &posX, int &posY) {
 }
 
 
-void Frame::ComputeBoW()
-{
-    if(mBowVec.empty())
-    {
+void Frame::ComputeBoW() {
+    if(mBowVec.empty()) {
         vector<cv::Mat> vCurrentDesc = Converter::toDescriptorVector(mDescriptors);
         mpORBvocabulary->transform(vCurrentDesc,mBowVec,mFeatVec,4);
     }

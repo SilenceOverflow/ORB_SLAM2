@@ -165,7 +165,7 @@ protected:
     // Initalization (only for monocular)
     Initializer* mpInitializer;
 
-    //Local Map
+    // Local Map
     KeyFrame* mpReferenceKF;
     std::vector<KeyFrame*> mvpLocalKeyFrames;
     std::vector<MapPoint*> mvpLocalMapPoints;
@@ -186,7 +186,7 @@ protected:
     cv::Mat mDistCoef;
     float mbf;              // stereo baseline times fx
 
-    //New KeyFrame rules (according to fps)
+    // New KeyFrame rules (according to fps)
     int mMinFrames;
     int mMaxFrames;
 
@@ -198,22 +198,22 @@ protected:
     // For RGB-D inputs only. For some datasets (e.g. TUM) the depthmap values are scaled.
     float mDepthMapFactor;
 
-    //Current matches in frame
+    // Current matches in frame
     int mnMatchesInliers;
 
-    //Last Frame, KeyFrame and Relocalisation Info
+    // Last Frame, KeyFrame and Relocalisation Info
     KeyFrame* mpLastKeyFrame;
     Frame mLastFrame;
     unsigned int mnLastKeyFrameId;
     unsigned int mnLastRelocFrameId;
 
-    //Motion Model
+    // Motion Model
     cv::Mat mVelocity;
 
-    //Color order (true RGB, false BGR, ignored if grayscale)
+    // Color order (true RGB, false BGR, ignored if grayscale)
     bool mbRGB;
 
-    list<MapPoint*> mlpTemporalPoints;
+    list<MapPoint*> mlpTemporalPoints;  // temp pts created in TrackWithMotionModel()
 };
 
 } //namespace ORB_SLAM

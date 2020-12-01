@@ -141,10 +141,10 @@ public:
     long unsigned int mnBAFixedForKF;
 
     // Variables used by the keyframe database
-    long unsigned int mnLoopQuery;
+    long unsigned int mnLoopQuery;              // DetectLoopCandidates(KeyFrame* pKF, float minScore);
     int mnLoopWords;
     float mLoopScore;
-    long unsigned int mnRelocQuery;
+    long unsigned int mnRelocQuery;             // DetectRelocalizationCandidates(Frame* F);
     int mnRelocWords;
     float mRelocScore;
 

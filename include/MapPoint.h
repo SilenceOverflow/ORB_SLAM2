@@ -63,7 +63,7 @@ public:
     void Replace(MapPoint* pMP);    
     MapPoint* GetReplaced();
 
-    void IncreaseVisible(int n=1);
+    void IncreaseVisible(int n=1);   // YJTODO:: diff between visible and found? 
     void IncreaseFound(int n=1);
     float GetFoundRatio();
     inline int GetFound(){
@@ -86,7 +86,7 @@ public:
     static long unsigned int nNextId;
     long int mnFirstKFid;
     long int mnFirstFrame;
-    int nObs;   // num of kfs it could be observed
+    int nObs;   // num of kfs by which it could be observed
 
     // Variables used by the tracking
     float mTrackProjX;

@@ -80,8 +80,7 @@ cv::Mat MapPoint::GetWorldPos() {
     return mWorldPos.clone();
 }
 
-cv::Mat MapPoint::GetNormal()
-{
+cv::Mat MapPoint::GetNormal() {
     unique_lock<mutex> lock(mMutexPos);
     return mNormalVector.clone();
 }
@@ -161,8 +160,7 @@ void MapPoint::SetBadFlag()
     mpMap->EraseMapPoint(this);
 }
 
-MapPoint* MapPoint::GetReplaced()
-{
+MapPoint* MapPoint::GetReplaced() {
     unique_lock<mutex> lock1(mMutexFeatures);
     unique_lock<mutex> lock2(mMutexPos);
     return mpReplaced;
@@ -215,16 +213,14 @@ bool MapPoint::isBad()
     return mbBad;
 }
 
-void MapPoint::IncreaseVisible(int n)
-{
+void MapPoint::IncreaseVisible(int n) {
     unique_lock<mutex> lock(mMutexFeatures);
-    mnVisible+=n;
+    mnVisible += n;
 }
 
-void MapPoint::IncreaseFound(int n)
-{
+void MapPoint::IncreaseFound(int n) {
     unique_lock<mutex> lock(mMutexFeatures);
-    mnFound+=n;
+    mnFound += n;
 }
 
 float MapPoint::GetFoundRatio()
@@ -294,8 +290,7 @@ void MapPoint::ComputeDistinctiveDescriptors() {
     }
 }
 
-cv::Mat MapPoint::GetDescriptor()
-{
+cv::Mat MapPoint::GetDescriptor() {
     unique_lock<mutex> lock(mMutexFeatures);
     return mDescriptor.clone();
 }
@@ -356,14 +351,12 @@ void MapPoint::UpdateNormalAndDepth() {
     }
 }
 
-float MapPoint::GetMinDistanceInvariance()
-{
+float MapPoint::GetMinDistanceInvariance() {
     unique_lock<mutex> lock(mMutexPos);
     return 0.8f*mfMinDistance;
 }
 
-float MapPoint::GetMaxDistanceInvariance()
-{
+float MapPoint::GetMaxDistanceInvariance() {
     unique_lock<mutex> lock(mMutexPos);
     return 1.2f*mfMaxDistance;
 }
