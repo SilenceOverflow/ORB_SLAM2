@@ -914,7 +914,7 @@ bool Tracking::NeedNewKeyFrame() {
 
     // Check how many "close" points are being tracked and how many could be potentially created.
     int nNonTrackedClose = 0;
-    int nTrackedClose= 0;
+    int nTrackedClose = 0;
     if(mSensor!=System::MONOCULAR)
     {
         for(int i =0; i<mCurrentFrame.N; i++)
@@ -944,9 +944,9 @@ bool Tracking::NeedNewKeyFrame() {
     // Condition 1b: More than "MinFrames" have passed and Local Mapping is idle
     const bool c1b = (mCurrentFrame.mnId >= mnLastKeyFrameId + mMinFrames && bLocalMappingIdle);
     //Condition 1c: tracking is weak
-    const bool c1c =  mSensor!=System::MONOCULAR && (mnMatchesInliers<nRefMatches*0.25 || bNeedToInsertClose);
+    const bool c1c = mSensor!=System::MONOCULAR && (mnMatchesInliers<nRefMatches*0.25 || bNeedToInsertClose);
     // Condition 2: Few tracked points compared to reference keyframe. Lots of visual odometry compared to map matches.
-    const bool c2 = ((mnMatchesInliers<nRefMatches*thRefRatio|| bNeedToInsertClose) && mnMatchesInliers>15);
+    const bool c2 = ((mnMatchesInliers<nRefMatches*thRefRatio || bNeedToInsertClose) && mnMatchesInliers>15);
 
     if((c1a||c1b||c1c)&&c2) {
         // If the mapping accepts keyframes, insert keyframe.
@@ -1040,7 +1040,7 @@ void Tracking::CreateNewKeyFrame() {
                     break;
             }
         }
-    }
+    } /* if(mSensor!=System::MONOCULAR)　*/
 
     mpLocalMapper->InsertKeyFrame(pKF);
     // if !mbStopped, recover mbNotStop = false

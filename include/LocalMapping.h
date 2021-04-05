@@ -51,8 +51,8 @@ public:
 
     void InsertKeyFrame(KeyFrame* pKF);
 
-    // Thread Synch
-    void RequestStop();
+    // Thread Sync
+    void RequestStop();         // in LoopClosing::CorrectLoop() or when updating map after GBA
     void RequestReset();
     bool Stop();
     void Release();
@@ -108,18 +108,18 @@ protected:
 
     KeyFrame* mpCurrentKeyFrame;
 
-    std::list<MapPoint*> mlpRecentAddedMapPoints;
+    std::list<MapPoint*> mlpRecentAddedMapPoints; // for new stereo points inserted by the Tracking
 
     std::mutex mMutexNewKFs;
 
-    bool mbAbortBA;
+    bool mbAbortBA;         // true if RequestStop(); or InterruptBA() by Tracking; InsertKeyFrame()
 
-    bool mbStopped;         // YJTODO:: diff?
-    bool mbStopRequested;
-    bool mbNotStop;
+    bool mbStopped;         // true if freezed by a Loop Closure, in :Stop() or SetFinish()
+    bool mbStopRequested;   // true if RequestStop()
+    bool mbNotStop;         // true during CreateNewKeyFrame() in Tracking, even Stop() is called
     std::mutex mMutexStop;
 
-    bool mbAcceptKeyFrames;
+    bool mbAcceptKeyFrames; // whether accept KFs from Tracking, set true if Local Mapping is idle
     std::mutex mMutexAccept;
 };
 

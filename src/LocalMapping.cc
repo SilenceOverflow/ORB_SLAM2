@@ -34,14 +34,12 @@ LocalMapping::LocalMapping(Map *pMap, const float bMonocular):
 {
 }
 
-void LocalMapping::SetLoopCloser(LoopClosing* pLoopCloser)
-{
+void LocalMapping::SetLoopCloser(LoopClosing* pLoopCloser) {
     mpLoopCloser = pLoopCloser;
 }
 
-void LocalMapping::SetTracker(Tracking *pTracker)
-{
-    mpTracker=pTracker;
+void LocalMapping::SetTracker(Tracking *pTracker) {
+    mpTracker = pTracker;
 }
 
 void LocalMapping::Run()
@@ -99,7 +97,7 @@ void LocalMapping::Run()
 
         ResetIfRequested();
 
-        // Tracking will see that Local Mapping is busy
+        // Tracking will see that Local Mapping is not busy
         SetAcceptKeyFrames(true);
 
         if(CheckFinish())
@@ -118,14 +116,12 @@ void LocalMapping::InsertKeyFrame(KeyFrame *pKF) {
 }
 
 
-bool LocalMapping::CheckNewKeyFrames()
-{
+bool LocalMapping::CheckNewKeyFrames() {
     unique_lock<mutex> lock(mMutexNewKFs);
     return(!mlNewKeyFrames.empty());
 }
 
-void LocalMapping::ProcessNewKeyFrame()
-{
+void LocalMapping::ProcessNewKeyFrame() {
     {
         unique_lock<mutex> lock(mMutexNewKFs);
         mpCurrentKeyFrame = mlNewKeyFrames.front();
@@ -138,15 +134,11 @@ void LocalMapping::ProcessNewKeyFrame()
     // Associate MapPoints to the new keyframe and update normal and descriptor
     const vector<MapPoint*> vpMapPointMatches = mpCurrentKeyFrame->GetMapPointMatches();
 
-    for(size_t i=0; i<vpMapPointMatches.size(); i++)
-    {
+    for(size_t i = 0; i < vpMapPointMatches.size(); i++) {
         MapPoint* pMP = vpMapPointMatches[i];
-        if(pMP)
-        {
-            if(!pMP->isBad())
-            {
-                if(!pMP->IsInKeyFrame(mpCurrentKeyFrame))
-                {
+        if(pMP) {
+            if(!pMP->isBad()) {
+                if(!pMP->IsInKeyFrame(mpCurrentKeyFrame)) {
                     pMP->AddObservation(mpCurrentKeyFrame, i);
                     pMP->UpdateNormalAndDepth();
                     pMP->ComputeDistinctiveDescriptors();
@@ -551,8 +543,7 @@ cv::Mat LocalMapping::ComputeF12(KeyFrame *&pKF1, KeyFrame *&pKF2)
     return K1.t().inv()*t12x*R12*K2.inv();
 }
 
-void LocalMapping::RequestStop()
-{
+void LocalMapping::RequestStop() {
     unique_lock<mutex> lock(mMutexStop);
     mbStopRequested = true;
     unique_lock<mutex> lock2(mMutexNewKFs);
@@ -602,16 +593,15 @@ bool LocalMapping::AcceptKeyFrames() {
     return mbAcceptKeyFrames;
 }
 
-void LocalMapping::SetAcceptKeyFrames(bool flag)
-{
+void LocalMapping::SetAcceptKeyFrames(bool flag) {
     unique_lock<mutex> lock(mMutexAccept);
-    mbAcceptKeyFrames=flag;
+    mbAcceptKeyFrames = flag;
 }
 
 bool LocalMapping::SetNotStop(bool flag) {
     unique_lock<mutex> lock(mMutexStop);
 
-    if(flag && mbStopped)
+    if(flag && mbStopped)   // return if LocalMapping is stopped
         return false;
 
     mbNotStop = flag;

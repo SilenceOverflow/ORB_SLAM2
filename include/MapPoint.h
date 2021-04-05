@@ -70,11 +70,11 @@ public:
         return mnFound;
     }
 
-    void ComputeDistinctiveDescriptors();
+    void ComputeDistinctiveDescriptors();   // update mDescriptor
 
     cv::Mat GetDescriptor();
 
-    void UpdateNormalAndDepth();
+    void UpdateNormalAndDepth();        // update mNormalVector, mfMinDistance, mfMaxDistance
 
     float GetMinDistanceInvariance();
     float GetMaxDistanceInvariance();
