@@ -137,23 +137,22 @@ float ORBmatcher::RadiusByViewingCos(const float &viewCos)
 }
 
 
-bool ORBmatcher::CheckDistEpipolarLine(const cv::KeyPoint &kp1,const cv::KeyPoint &kp2,const cv::Mat &F12,const KeyFrame* pKF2)
-{
+bool ORBmatcher::CheckDistEpipolarLine(const cv::KeyPoint &kp1,const cv::KeyPoint &kp2,const cv::Mat &F12,const KeyFrame* pKF2) {
     // Epipolar line in second image l = x1'F12 = [a b c]
-    const float a = kp1.pt.x*F12.at<float>(0,0)+kp1.pt.y*F12.at<float>(1,0)+F12.at<float>(2,0);
-    const float b = kp1.pt.x*F12.at<float>(0,1)+kp1.pt.y*F12.at<float>(1,1)+F12.at<float>(2,1);
-    const float c = kp1.pt.x*F12.at<float>(0,2)+kp1.pt.y*F12.at<float>(1,2)+F12.at<float>(2,2);
+    const float a = kp1.pt.x * F12.at<float>(0,0) + kp1.pt.y * F12.at<float>(1,0) + F12.at<float>(2,0);
+    const float b = kp1.pt.x * F12.at<float>(0,1) + kp1.pt.y * F12.at<float>(1,1) + F12.at<float>(2,1);
+    const float c = kp1.pt.x * F12.at<float>(0,2) + kp1.pt.y * F12.at<float>(1,2) + F12.at<float>(2,2);
 
-    const float num = a*kp2.pt.x+b*kp2.pt.y+c;
+    const float num = a * kp2.pt.x + b * kp2.pt.y + c;
 
-    const float den = a*a+b*b;
+    const float den = a * a + b * b;
 
     if(den==0)
         return false;
 
-    const float dsqr = num*num/den;
+    const float dsqr = num * num / den;
 
-    return dsqr<3.84*pKF2->mvLevelSigma2[kp2.octave];
+    return dsqr < 3.84 * pKF2->mvLevelSigma2[kp2.octave];
 }
 
 int ORBmatcher::SearchByBoW(KeyFrame* pKF, Frame &F, vector<MapPoint*> &vpMapPointMatches) {
@@ -249,17 +248,17 @@ int ORBmatcher::SearchByBoW(KeyFrame* pKF, Frame &F, vector<MapPoint*> &vpMapPoi
 
 
     if(mbCheckOrientation) {
-        int ind1=-1;
-        int ind2=-1;
-        int ind3=-1;
+        int ind1 = -1;
+        int ind2 = -1;
+        int ind3 = -1;
 
-        ComputeThreeMaxima(rotHist,HISTO_LENGTH,ind1,ind2,ind3);
+        ComputeThreeMaxima(rotHist, HISTO_LENGTH, ind1, ind2, ind3);
 
-        for(int i=0; i<HISTO_LENGTH; i++) {
-            if(i==ind1 || i==ind2 || i==ind3)
+        for(int i = 0; i < HISTO_LENGTH; i++) {
+            if(i == ind1 || i == ind2 || i == ind3)
                 continue;
-            for(size_t j=0, jend=rotHist[i].size(); j<jend; j++) {
-                vpMapPointMatches[rotHist[i][j]]=static_cast<MapPoint*>(NULL);
+            for(size_t j = 0, jend = rotHist[i].size(); j < jend; j++) {
+                vpMapPointMatches[rotHist[i][j]] = static_cast<MapPoint*>(NULL);
                 nmatches--;
             }
         }
@@ -622,8 +621,7 @@ int ORBmatcher::SearchByBoW(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
 }
 
 int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F12,
-                                       vector<pair<size_t, size_t> > &vMatchedPairs, const bool bOnlyStereo)
-{    
+                                       vector<pair<size_t, size_t> > &vMatchedPairs, const bool bOnlyStereo) {
     const DBoW2::FeatureVector &vFeatVec1 = pKF1->mFeatVec;
     const DBoW2::FeatureVector &vFeatVec2 = pKF2->mFeatVec;
 
@@ -631,21 +629,21 @@ int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F
     cv::Mat Cw = pKF1->GetCameraCenter();
     cv::Mat R2w = pKF2->GetRotation();
     cv::Mat t2w = pKF2->GetTranslation();
-    cv::Mat C2 = R2w*Cw+t2w;
+    cv::Mat C2 = R2w * Cw + t2w;
     const float invz = 1.0f/C2.at<float>(2);
-    const float ex =pKF2->fx*C2.at<float>(0)*invz+pKF2->cx;
-    const float ey =pKF2->fy*C2.at<float>(1)*invz+pKF2->cy;
+    const float ex = pKF2->fx * C2.at<float>(0) * invz + pKF2->cx;
+    const float ey = pKF2->fy * C2.at<float>(1) * invz + pKF2->cy;
 
-    // Find matches between not tracked keypoints
+    // Find matches between **not** tracked keypoints
     // Matching speed-up by ORB Vocabulary
-    // Compare only ORB that share the same node
+    // Compare only ORB that share the same node!
 
-    int nmatches=0;
-    vector<bool> vbMatched2(pKF2->N,false);
-    vector<int> vMatches12(pKF1->N,-1);
+    int nmatches = 0;
+    vector<bool> vbMatched2(pKF2->N, false);
+    vector<int> vMatches12(pKF1->N, -1);
 
     vector<int> rotHist[HISTO_LENGTH];
-    for(int i=0;i<HISTO_LENGTH;i++)
+    for(int i = 0; i < HISTO_LENGTH; i++)
         rotHist[i].reserve(500);
 
     const float factor = 1.0f/HISTO_LENGTH;
@@ -655,12 +653,10 @@ int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F
     DBoW2::FeatureVector::const_iterator f1end = vFeatVec1.end();
     DBoW2::FeatureVector::const_iterator f2end = vFeatVec2.end();
 
-    while(f1it!=f1end && f2it!=f2end)
-    {
-        if(f1it->first == f2it->first)
-        {
-            for(size_t i1=0, iend1=f1it->second.size(); i1<iend1; i1++)
-            {
+    while(f1it!=f1end && f2it!=f2end) {
+        if(f1it->first == f2it->first) {  // same node on voc tree
+            // search each local feature in KF1 associated to this node
+            for(size_t i1 = 0, iend1 = f1it->second.size(); i1 < iend1; i1++) {
                 const size_t idx1 = f1it->second[i1];
                 
                 MapPoint* pMP1 = pKF1->GetMapPoint(idx1);
@@ -669,7 +665,7 @@ int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F
                 if(pMP1)
                     continue;
 
-                const bool bStereo1 = pKF1->mvuRight[idx1]>=0;
+                const bool bStereo1 = pKF1->mvuRight[idx1] >= 0;
 
                 if(bOnlyStereo)
                     if(!bStereo1)
@@ -682,8 +678,7 @@ int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F
                 int bestDist = TH_LOW;
                 int bestIdx2 = -1;
                 
-                for(size_t i2=0, iend2=f2it->second.size(); i2<iend2; i2++)
-                {
+                for(size_t i2 = 0, iend2=f2it->second.size(); i2 < iend2; i2++) {
                     size_t idx2 = f2it->second[i2];
                     
                     MapPoint* pMP2 = pKF2->GetMapPoint(idx2);
@@ -692,7 +687,7 @@ int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F
                     if(vbMatched2[idx2] || pMP2)
                         continue;
 
-                    const bool bStereo2 = pKF2->mvuRight[idx2]>=0;
+                    const bool bStereo2 = pKF2->mvuRight[idx2] >= 0;
 
                     if(bOnlyStereo)
                         if(!bStereo2)
@@ -700,43 +695,39 @@ int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F
                     
                     const cv::Mat &d2 = pKF2->mDescriptors.row(idx2);
                     
-                    const int dist = DescriptorDistance(d1,d2);
+                    const int dist = DescriptorDistance(d1, d2);
                     
-                    if(dist>TH_LOW || dist>bestDist)
+                    if(dist > TH_LOW || dist > bestDist)
                         continue;
 
                     const cv::KeyPoint &kp2 = pKF2->mvKeysUn[idx2];
 
-                    if(!bStereo1 && !bStereo2)
-                    {
-                        const float distex = ex-kp2.pt.x;
-                        const float distey = ey-kp2.pt.y;
-                        if(distex*distex+distey*distey<100*pKF2->mvScaleFactors[kp2.octave])
+                    if(!bStereo1 && !bStereo2) {
+                        const float distex = ex - kp2.pt.x;
+                        const float distey = ey - kp2.pt.y;
+                        if(distex * distex + distey * distey < 100 * pKF2->mvScaleFactors[kp2.octave])
                             continue;
                     }
 
-                    if(CheckDistEpipolarLine(kp1,kp2,F12,pKF2))
-                    {
+                    if(CheckDistEpipolarLine(kp1, kp2, F12, pKF2)) {
                         bestIdx2 = idx2;
                         bestDist = dist;
                     }
                 }
                 
-                if(bestIdx2>=0)
-                {
+                if(bestIdx2 >= 0) {
                     const cv::KeyPoint &kp2 = pKF2->mvKeysUn[bestIdx2];
-                    vMatches12[idx1]=bestIdx2;
+                    vMatches12[idx1] = bestIdx2;
                     nmatches++;
 
-                    if(mbCheckOrientation)
-                    {
-                        float rot = kp1.angle-kp2.angle;
-                        if(rot<0.0)
-                            rot+=360.0f;
-                        int bin = round(rot*factor);
-                        if(bin==HISTO_LENGTH)
+                    if(mbCheckOrientation) {
+                        float rot = kp1.angle - kp2.angle;
+                        if(rot < 0.0)
+                            rot += 360.0f;
+                        int bin = round(rot * factor);
+                        if(bin == HISTO_LENGTH)
                             bin=0;
-                        assert(bin>=0 && bin<HISTO_LENGTH);
+                        assert(bin >= 0 && bin < HISTO_LENGTH);
                         rotHist[bin].push_back(idx1);
                     }
                 }
@@ -744,19 +735,14 @@ int ORBmatcher::SearchForTriangulation(KeyFrame *pKF1, KeyFrame *pKF2, cv::Mat F
 
             f1it++;
             f2it++;
-        }
-        else if(f1it->first < f2it->first)
-        {
+        } else if(f1it->first < f2it->first) {
             f1it = vFeatVec1.lower_bound(f2it->first);
-        }
-        else
-        {
+        } else {
             f2it = vFeatVec2.lower_bound(f1it->first);
         }
-    }
+    } /* end of while(f1it!=f1end && f2it!=f2end) */
 
-    if(mbCheckOrientation)
-    {
+    if(mbCheckOrientation) {
         int ind1=-1;
         int ind2=-1;
         int ind3=-1;
@@ -1558,30 +1544,30 @@ void ORBmatcher::ComputeThreeMaxima(vector<int>* histo, const int L, int &ind1, 
     int max2=0;
     int max3=0;
 
-    for(int i=0; i<L; i++) {
+    for(int i = 0; i < L; i++) {
         const int s = histo[i].size();
-        if(s>max1) {
+        if(s > max1) {
             max3=max2;
             max2=max1;
             max1=s;
             ind3=ind2;
             ind2=ind1;
             ind1=i;
-        } else if(s>max2) {
+        } else if(s > max2) {
             max3=max2;
             max2=s;
             ind3=ind2;
             ind2=i;
-        } else if(s>max3) {
+        } else if(s > max3) {
             max3=s;
             ind3=i;
         }
     }
 
-    if(max2<0.1f*(float)max1) {
+    if(max2 < 0.1f * (float)max1) {
         ind2=-1;
         ind3=-1;
-    } else if(max3<0.1f*(float)max1) {
+    } else if(max3 < 0.1f * (float)max1) {
         ind3=-1;
     }
 }

@@ -105,15 +105,12 @@ cv::Mat KeyFrame::GetStereoCenter()
     return Cw.clone();
 }
 
-
-cv::Mat KeyFrame::GetRotation()
-{
+cv::Mat KeyFrame::GetRotation() {
     unique_lock<mutex> lock(mMutexPose);
     return Tcw.rowRange(0,3).colRange(0,3).clone();
 }
 
-cv::Mat KeyFrame::GetTranslation()
-{
+cv::Mat KeyFrame::GetTranslation() {
     unique_lock<mutex> lock(mMutexPose);
     return Tcw.rowRange(0,3).col(3).clone();
 }
@@ -583,21 +580,18 @@ bool KeyFrame::IsInImage(const float &x, const float &y) const
     return (x>=mnMinX && x<mnMaxX && y>=mnMinY && y<mnMaxY);
 }
 
-cv::Mat KeyFrame::UnprojectStereo(int i)
-{
+cv::Mat KeyFrame::UnprojectStereo(int i) {
     const float z = mvDepth[i];
-    if(z>0)
-    {
+    if(z > 0) {
         const float u = mvKeys[i].pt.x;
         const float v = mvKeys[i].pt.y;
-        const float x = (u-cx)*z*invfx;
-        const float y = (v-cy)*z*invfy;
+        const float x = (u - cx) * z * invfx;
+        const float y = (v - cy) * z * invfy;
         cv::Mat x3Dc = (cv::Mat_<float>(3,1) << x, y, z);
 
         unique_lock<mutex> lock(mMutexPose);
-        return Twc.rowRange(0,3).colRange(0,3)*x3Dc+Twc.rowRange(0,3).col(3);
-    }
-    else
+        return Twc.rowRange(0,3).colRange(0,3) * x3Dc + Twc.rowRange(0,3).col(3);
+    } else
         return cv::Mat();
 }
 
@@ -611,16 +605,17 @@ float KeyFrame::ComputeSceneMedianDepth(const int q) {
         Tcw_ = Tcw.clone();
     }
 
+    // compute MP depth in cam coordinate
     vector<float> vDepths;
     vDepths.reserve(N);
     cv::Mat Rcw2 = Tcw_.row(2).colRange(0,3);
     Rcw2 = Rcw2.t();
     float zcw = Tcw_.at<float>(2,3);
-    for(int i=0; i<N; i++) {
+    for(int i = 0; i < N; i++) {
         if(mvpMapPoints[i]) {
             MapPoint* pMP = mvpMapPoints[i];
             cv::Mat x3Dw = pMP->GetWorldPos();
-            float z = Rcw2.dot(x3Dw)+zcw;
+            float z = Rcw2.dot(x3Dw) + zcw;
             vDepths.push_back(z);
         }
     }

@@ -63,14 +63,12 @@ public:
     void Replace(MapPoint* pMP);    
     MapPoint* GetReplaced();
 
-    void IncreaseVisible(int n=1);   // YJTODO:: diff between visible and found? 
+    void IncreaseVisible(int n=1);
     void IncreaseFound(int n=1);
     float GetFoundRatio();
-    inline int GetFound(){
-        return mnFound;
-    }
+    inline int GetFound() {return mnFound;}
 
-    void ComputeDistinctiveDescriptors();   // update mDescriptor
+    void ComputeDistinctiveDescriptors();   // update mDescriptor based on all latest observations
 
     cv::Mat GetDescriptor();
 
@@ -130,8 +128,8 @@ protected:
      KeyFrame* mpRefKF;
 
      // Tracking counters
-     int mnVisible;
-     int mnFound;
+     int mnVisible;     // increase by 1 if it could be observed by some frame in tracking or projected to this frame's frustum, namely predicted to be visible
+     int mnFound;       // increase by 1 if it's not an outlier after opt
 
      // Bad flag (we do not currently erase MapPoint from memory)
      bool mbBad;

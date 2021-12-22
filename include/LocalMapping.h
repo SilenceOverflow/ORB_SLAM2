@@ -108,7 +108,8 @@ protected:
 
     KeyFrame* mpCurrentKeyFrame;
 
-    std::list<MapPoint*> mlpRecentAddedMapPoints; // for new stereo points inserted by the Tracking
+    // store new stereo points inserted by the Tracking or newly triangulated MPs in CreateNewMapPoints()
+    std::list<MapPoint*> mlpRecentAddedMapPoints;
 
     std::mutex mMutexNewKFs;
 

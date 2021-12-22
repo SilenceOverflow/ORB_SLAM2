@@ -195,7 +195,7 @@ protected:
     // SE3 Pose and camera center
     cv::Mat Tcw;   // cam pose in world coordinate, Tcw * Pw = Pc
     cv::Mat Twc;   
-    cv::Mat Ow;    // Tcw * Ow = [0, 0, 0]^T in cam coordinate
+    cv::Mat Ow;    // camera center in world coordinate, i.e., Tcw * Ow = [0, 0, 0]^T in cam coordinate
 
     cv::Mat Cw; // Stereo middel point. Only for visualization
 
