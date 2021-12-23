@@ -60,14 +60,14 @@ public:
     bool stopRequested();
     bool AcceptKeyFrames();
     void SetAcceptKeyFrames(bool flag);
-    bool SetNotStop(bool flag);
+    bool SetNotStop(bool flag); // used by Tracking::CreateNewKeyFrame()
 
     void InterruptBA();
 
-    void RequestFinish();
+    void RequestFinish();       // used by System::Shutdown()
     bool isFinished();
 
-    int KeyframesInQueue(){
+    int KeyframesInQueue() {
         unique_lock<std::mutex> lock(mMutexNewKFs);
         return mlNewKeyFrames.size();
     }
@@ -108,14 +108,16 @@ protected:
 
     KeyFrame* mpCurrentKeyFrame;
 
-    // store new stereo points inserted by the Tracking or newly triangulated MPs in CreateNewMapPoints()
+    // store 
+    // 1. new stereo points inserted by the Tracking or 
+    // 2. newly triangulated MPs in CreateNewMapPoints()
     std::list<MapPoint*> mlpRecentAddedMapPoints;
 
     std::mutex mMutexNewKFs;
 
     bool mbAbortBA;         // true if RequestStop(); or InterruptBA() by Tracking; InsertKeyFrame()
 
-    bool mbStopped;         // true if freezed by a Loop Closure, in :Stop() or SetFinish()
+    bool mbStopped;         // true if freezed by a Loop Closure, in Stop() or SetFinish()
     bool mbStopRequested;   // true if RequestStop()
     bool mbNotStop;         // true during CreateNewKeyFrame() in Tracking, even Stop() is called
     std::mutex mMutexStop;

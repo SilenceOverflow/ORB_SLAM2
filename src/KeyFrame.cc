@@ -198,7 +198,7 @@ int KeyFrame::GetWeight(KeyFrame *pKF)
 
 void KeyFrame::AddMapPoint(MapPoint *pMP, const size_t &idx) {
     unique_lock<mutex> lock(mMutexFeatures);
-    mvpMapPoints[idx]=pMP;
+    mvpMapPoints[idx] = pMP;
 }
 
 void KeyFrame::EraseMapPointMatch(const size_t &idx) {
@@ -206,11 +206,10 @@ void KeyFrame::EraseMapPointMatch(const size_t &idx) {
     mvpMapPoints[idx] = static_cast<MapPoint*>(NULL);
 }
 
-void KeyFrame::EraseMapPointMatch(MapPoint* pMP)
-{
+void KeyFrame::EraseMapPointMatch(MapPoint* pMP) {
     int idx = pMP->GetIndexInKeyFrame(this);
-    if(idx>=0)
-        mvpMapPoints[idx]=static_cast<MapPoint*>(NULL);
+    if(idx >= 0)
+        mvpMapPoints[idx] = static_cast<MapPoint*>(NULL);
 }
 
 
@@ -417,25 +416,24 @@ void KeyFrame::SetErase()
     }
 }
 
-void KeyFrame::SetBadFlag()
-{   
+void KeyFrame::SetBadFlag() {
     {
         unique_lock<mutex> lock(mMutexConnections);
-        if(mnId==0)
+        if(mnId == 0)
             return;
-        else if(mbNotErase)
-        {
+        else if(mbNotErase) {
             mbToBeErased = true;
             return;
         }
     }
 
-    for(map<KeyFrame*,int>::iterator mit = mConnectedKeyFrameWeights.begin(), mend=mConnectedKeyFrameWeights.end(); mit!=mend; mit++)
+    for(map<KeyFrame*,int>::iterator mit = mConnectedKeyFrameWeights.begin(), mend = mConnectedKeyFrameWeights.end(); mit != mend; mit++)
         mit->first->EraseConnection(this);
 
-    for(size_t i=0; i<mvpMapPoints.size(); i++)
+    for(size_t i = 0; i < mvpMapPoints.size(); i++)
         if(mvpMapPoints[i])
             mvpMapPoints[i]->EraseObservation(this);
+
     {
         unique_lock<mutex> lock(mMutexConnections);
         unique_lock<mutex> lock1(mMutexFeatures);

@@ -136,7 +136,7 @@ public:
     long unsigned int mnTrackReferenceForFrame;
     long unsigned int mnFuseTargetForKF;        // used in LocalMapping::SearchInNeighbors()
 
-    // Variables used by the local mapping
+    // Variables used by the local mapping, all used in LBA
     long unsigned int mnBALocalForKF;
     long unsigned int mnBAFixedForKF;
 

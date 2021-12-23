@@ -103,27 +103,25 @@ void MapPoint::AddObservation(KeyFrame* pKF, size_t idx) {
         nObs++;
 }
 
-void MapPoint::EraseObservation(KeyFrame* pKF)
-{
-    bool bBad=false;
+void MapPoint::EraseObservation(KeyFrame* pKF) {
+    bool bBad = false;
     {
         unique_lock<mutex> lock(mMutexFeatures);
-        if(mObservations.count(pKF))
-        {
+        if(mObservations.count(pKF)) {
             int idx = mObservations[pKF];
-            if(pKF->mvuRight[idx]>=0)
-                nObs-=2;
+            if(pKF->mvuRight[idx] >= 0)
+                nObs -= 2;
             else
                 nObs--;
 
             mObservations.erase(pKF);
 
-            if(mpRefKF==pKF)
-                mpRefKF=mObservations.begin()->first;
+            if(mpRefKF == pKF)
+                mpRefKF = mObservations.begin()->first;
 
             // If only 2 observations or less, discard point
-            if(nObs<=2)
-                bBad=true;
+            if(nObs <= 2)
+                bBad = true;
         }
     }
 
@@ -141,18 +139,16 @@ int MapPoint::Observations() {
     return nObs;
 }
 
-void MapPoint::SetBadFlag()
-{
+void MapPoint::SetBadFlag() {
     map<KeyFrame*,size_t> obs;
     {
         unique_lock<mutex> lock1(mMutexFeatures);
         unique_lock<mutex> lock2(mMutexPos);
-        mbBad=true;
+        mbBad = true;
         obs = mObservations;
         mObservations.clear();
     }
-    for(map<KeyFrame*,size_t>::iterator mit=obs.begin(), mend=obs.end(); mit!=mend; mit++)
-    {
+    for(map<KeyFrame*,size_t>::iterator mit = obs.begin(), mend = obs.end(); mit != mend; mit++) {
         KeyFrame* pKF = mit->first;
         pKF->EraseMapPointMatch(mit->second);
     }
