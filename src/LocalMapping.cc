@@ -42,13 +42,11 @@ void LocalMapping::SetTracker(Tracking *pTracker) {
     mpTracker = pTracker;
 }
 
-void LocalMapping::Run()
-{
+void LocalMapping::Run() {
 
     mbFinished = false;
 
-    while(1)
-    {
+    while(1) {
         // Tracking will see that Local Mapping is busy
         SetAcceptKeyFrames(false);
 

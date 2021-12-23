@@ -394,24 +394,20 @@ set<KeyFrame*> KeyFrame::GetLoopEdges()
     return mspLoopEdges;
 }
 
-void KeyFrame::SetNotErase()
-{
+void KeyFrame::SetNotErase() {
     unique_lock<mutex> lock(mMutexConnections);
     mbNotErase = true;
 }
 
-void KeyFrame::SetErase()
-{
+void KeyFrame::SetErase() {
     {
         unique_lock<mutex> lock(mMutexConnections);
-        if(mspLoopEdges.empty())
-        {
+        if(mspLoopEdges.empty()) {
             mbNotErase = false;
         }
     }
 
-    if(mbToBeErased)
-    {
+    if(mbToBeErased) {
         SetBadFlag();
     }
 }

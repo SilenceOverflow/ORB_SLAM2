@@ -57,6 +57,8 @@ protected:
 
     void CheckInliers();
 
+    // Project: from P3d in world frame to image
+    // FromCameraToImage: from P3d in cam frame to image
     void Project(const std::vector<cv::Mat> &vP3Dw, std::vector<cv::Mat> &vP2D, cv::Mat Tcw, cv::Mat K);
     void FromCameraToImage(const std::vector<cv::Mat> &vP3Dc, std::vector<cv::Mat> &vP2D, cv::Mat K);
 

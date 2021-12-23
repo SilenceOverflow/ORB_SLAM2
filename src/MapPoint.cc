@@ -284,8 +284,7 @@ cv::Mat MapPoint::GetDescriptor() {
     return mDescriptor.clone();
 }
 
-int MapPoint::GetIndexInKeyFrame(KeyFrame *pKF)
-{
+int MapPoint::GetIndexInKeyFrame(KeyFrame *pKF) {
     unique_lock<mutex> lock(mMutexFeatures);
     if(mObservations.count(pKF))
         return mObservations[pKF];

@@ -99,7 +99,7 @@ public:
 
     // Enable/Disable bad flag changes
     void SetNotErase();
-    void SetErase();
+    void SetErase();    // set flag that it could be erased/set bad
 
     // Set/check bad flag
     void SetBadFlag();
@@ -142,7 +142,7 @@ public:
 
     // Variables used by the keyframe database
     long unsigned int mnLoopQuery;              // DetectLoopCandidates(KeyFrame* pKF, float minScore);
-    int mnLoopWords;
+    int mnLoopWords;                            // number of BoW words shared with the latest KF in LC
     float mLoopScore;
     long unsigned int mnRelocQuery;             // DetectRelocalizationCandidates(Frame* F);
     int mnRelocWords;
