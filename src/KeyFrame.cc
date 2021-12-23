@@ -45,9 +45,9 @@ KeyFrame::KeyFrame(Frame &F, Map *pMap, KeyFrameDatabase *pKFDB):
     mnId=nNextId++;
 
     mGrid.resize(mnGridCols);
-    for(int i=0; i<mnGridCols;i++) {
+    for(int i = 0; i < mnGridCols; i++) {
         mGrid[i].resize(mnGridRows);
-        for(int j=0; j<mnGridRows; j++)
+        for(int j = 0; j < mnGridRows; j++)
             mGrid[i][j] = F.mGrid[i][j];
     }
 
@@ -201,10 +201,9 @@ void KeyFrame::AddMapPoint(MapPoint *pMP, const size_t &idx) {
     mvpMapPoints[idx]=pMP;
 }
 
-void KeyFrame::EraseMapPointMatch(const size_t &idx)
-{
+void KeyFrame::EraseMapPointMatch(const size_t &idx) {
     unique_lock<mutex> lock(mMutexFeatures);
-    mvpMapPoints[idx]=static_cast<MapPoint*>(NULL);
+    mvpMapPoints[idx] = static_cast<MapPoint*>(NULL);
 }
 
 void KeyFrame::EraseMapPointMatch(MapPoint* pMP)
@@ -215,9 +214,8 @@ void KeyFrame::EraseMapPointMatch(MapPoint* pMP)
 }
 
 
-void KeyFrame::ReplaceMapPointMatch(const size_t &idx, MapPoint* pMP)
-{
-    mvpMapPoints[idx]=pMP;
+void KeyFrame::ReplaceMapPointMatch(const size_t &idx, MapPoint* pMP) {
+    mvpMapPoints[idx] = pMP;
 }
 
 set<MapPoint*> KeyFrame::GetMapPoints()
@@ -534,39 +532,35 @@ void KeyFrame::EraseConnection(KeyFrame* pKF)
         UpdateBestCovisibles();
 }
 
-vector<size_t> KeyFrame::GetFeaturesInArea(const float &x, const float &y, const float &r) const
-{
+vector<size_t> KeyFrame::GetFeaturesInArea(const float &x, const float &y, const float &r) const {
     vector<size_t> vIndices;
     vIndices.reserve(N);
 
-    const int nMinCellX = max(0,(int)floor((x-mnMinX-r)*mfGridElementWidthInv));
-    if(nMinCellX>=mnGridCols)
+    const int nMinCellX = max(0, (int)floor((x - mnMinX - r) * mfGridElementWidthInv));
+    if(nMinCellX >= mnGridCols)
         return vIndices;
 
-    const int nMaxCellX = min((int)mnGridCols-1,(int)ceil((x-mnMinX+r)*mfGridElementWidthInv));
-    if(nMaxCellX<0)
+    const int nMaxCellX = min((int)mnGridCols - 1, (int)ceil((x - mnMinX + r) * mfGridElementWidthInv));
+    if(nMaxCellX < 0)
         return vIndices;
 
-    const int nMinCellY = max(0,(int)floor((y-mnMinY-r)*mfGridElementHeightInv));
-    if(nMinCellY>=mnGridRows)
+    const int nMinCellY = max(0, (int)floor((y - mnMinY - r) * mfGridElementHeightInv));
+    if(nMinCellY >= mnGridRows)
         return vIndices;
 
-    const int nMaxCellY = min((int)mnGridRows-1,(int)ceil((y-mnMinY+r)*mfGridElementHeightInv));
-    if(nMaxCellY<0)
+    const int nMaxCellY = min((int)mnGridRows - 1, (int)ceil((y - mnMinY + r) * mfGridElementHeightInv));
+    if(nMaxCellY < 0)
         return vIndices;
 
-    for(int ix = nMinCellX; ix<=nMaxCellX; ix++)
-    {
-        for(int iy = nMinCellY; iy<=nMaxCellY; iy++)
-        {
+    for(int ix = nMinCellX; ix <= nMaxCellX; ix++) {
+        for(int iy = nMinCellY; iy <= nMaxCellY; iy++) {
             const vector<size_t> vCell = mGrid[ix][iy];
-            for(size_t j=0, jend=vCell.size(); j<jend; j++)
-            {
+            for(size_t j = 0, jend = vCell.size(); j < jend; j++) {
                 const cv::KeyPoint &kpUn = mvKeysUn[vCell[j]];
-                const float distx = kpUn.pt.x-x;
-                const float disty = kpUn.pt.y-y;
+                const float distx = kpUn.pt.x - x;
+                const float disty = kpUn.pt.y - y;
 
-                if(fabs(distx)<r && fabs(disty)<r)
+                if(fabs(distx) < r && fabs(disty) < r)
                     vIndices.push_back(vCell[j]);
             }
         }
@@ -575,9 +569,8 @@ vector<size_t> KeyFrame::GetFeaturesInArea(const float &x, const float &y, const
     return vIndices;
 }
 
-bool KeyFrame::IsInImage(const float &x, const float &y) const
-{
-    return (x>=mnMinX && x<mnMaxX && y>=mnMinY && y<mnMaxY);
+bool KeyFrame::IsInImage(const float &x, const float &y) const {
+    return (x >= mnMinX && x < mnMaxX && y >= mnMinY && y < mnMaxY);
 }
 
 cv::Mat KeyFrame::UnprojectStereo(int i) {

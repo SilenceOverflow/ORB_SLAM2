@@ -416,22 +416,26 @@ void Frame::UndistortKeyPoints() {
 }
 
 void Frame::ComputeImageBounds(const cv::Mat &imLeft) {
-    if(mDistCoef.at<float>(0)!=0.0) {
-        cv::Mat mat(4,2,CV_32F);
-        mat.at<float>(0,0)=0.0; mat.at<float>(0,1)=0.0;
-        mat.at<float>(1,0)=imLeft.cols; mat.at<float>(1,1)=0.0;
-        mat.at<float>(2,0)=0.0; mat.at<float>(2,1)=imLeft.rows;
-        mat.at<float>(3,0)=imLeft.cols; mat.at<float>(3,1)=imLeft.rows;
+    if(mDistCoef.at<float>(0) != 0.0) {
+        cv::Mat mat(4, 2, CV_32F);
+        mat.at<float>(0,0) = 0.0; 
+        mat.at<float>(0,1) = 0.0;
+        mat.at<float>(1,0) = imLeft.cols; 
+        mat.at<float>(1,1) = 0.0;
+        mat.at<float>(2,0) = 0.0; 
+        mat.at<float>(2,1) = imLeft.rows;
+        mat.at<float>(3,0) = imLeft.cols; 
+        mat.at<float>(3,1) = imLeft.rows;
 
         // Undistort corners
-        mat=mat.reshape(2);
-        cv::undistortPoints(mat,mat,mK,mDistCoef,cv::Mat(),mK);
-        mat=mat.reshape(1);
+        mat = mat.reshape(2);
+        cv::undistortPoints(mat, mat, mK, mDistCoef, cv::Mat(), mK);
+        mat = mat.reshape(1);
 
-        mnMinX = min(mat.at<float>(0,0),mat.at<float>(2,0));
-        mnMaxX = max(mat.at<float>(1,0),mat.at<float>(3,0));
-        mnMinY = min(mat.at<float>(0,1),mat.at<float>(1,1));
-        mnMaxY = max(mat.at<float>(2,1),mat.at<float>(3,1));
+        mnMinX = min(mat.at<float>(0,0), mat.at<float>(2,0));
+        mnMaxX = max(mat.at<float>(1,0), mat.at<float>(3,0));
+        mnMinY = min(mat.at<float>(0,1), mat.at<float>(1,1));
+        mnMaxY = max(mat.at<float>(2,1), mat.at<float>(3,1));
 
     } else {
         mnMinX = 0.0f;

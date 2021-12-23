@@ -166,37 +166,32 @@ MapPoint* MapPoint::GetReplaced() {
     return mpReplaced;
 }
 
-void MapPoint::Replace(MapPoint* pMP)
-{
-    if(pMP->mnId==this->mnId)
+void MapPoint::Replace(MapPoint* pMP) {
+    if(pMP->mnId == this->mnId)
         return;
 
     int nvisible, nfound;
-    map<KeyFrame*,size_t> obs;
+    map<KeyFrame*, size_t> obs;
     {
         unique_lock<mutex> lock1(mMutexFeatures);
         unique_lock<mutex> lock2(mMutexPos);
-        obs=mObservations;
+        obs = mObservations;
         mObservations.clear();
-        mbBad=true;
+        mbBad = true;
         nvisible = mnVisible;
         nfound = mnFound;
         mpReplaced = pMP;
     }
 
-    for(map<KeyFrame*,size_t>::iterator mit=obs.begin(), mend=obs.end(); mit!=mend; mit++)
-    {
+    for(map<KeyFrame*, size_t>::iterator mit = obs.begin(), mend = obs.end(); mit != mend; mit++) {
         // Replace measurement in keyframe
         KeyFrame* pKF = mit->first;
 
-        if(!pMP->IsInKeyFrame(pKF))
-        {
+        if(!pMP->IsInKeyFrame(pKF)) {
             pKF->ReplaceMapPointMatch(mit->second, pMP);
-            pMP->AddObservation(pKF,mit->second);
-        }
-        else
-        {
-            pKF->EraseMapPointMatch(mit->second);
+            pMP->AddObservation(pKF, mit->second);
+        } else {
+            pKF->EraseMapPointMatch(mit->second);   // MP obs conflicts in cur KF
         }
     }
     pMP->IncreaseFound(nfound);
@@ -206,8 +201,7 @@ void MapPoint::Replace(MapPoint* pMP)
     mpMap->EraseMapPoint(this);
 }
 
-bool MapPoint::isBad()
-{
+bool MapPoint::isBad() {
     unique_lock<mutex> lock(mMutexFeatures);
     unique_lock<mutex> lock2(mMutexPos);
     return mbBad;
@@ -352,16 +346,15 @@ void MapPoint::UpdateNormalAndDepth() {
 
 float MapPoint::GetMinDistanceInvariance() {
     unique_lock<mutex> lock(mMutexPos);
-    return 0.8f*mfMinDistance;
+    return 0.8f * mfMinDistance;
 }
 
 float MapPoint::GetMaxDistanceInvariance() {
     unique_lock<mutex> lock(mMutexPos);
-    return 1.2f*mfMaxDistance;
+    return 1.2f * mfMaxDistance;
 }
 
-int MapPoint::PredictScale(const float &currentDist, KeyFrame* pKF)
-{
+int MapPoint::PredictScale(const float &currentDist, KeyFrame* pKF) {
     float ratio;
     {
         unique_lock<mutex> lock(mMutexPos);
@@ -369,16 +362,15 @@ int MapPoint::PredictScale(const float &currentDist, KeyFrame* pKF)
     }
 
     int nScale = ceil(log(ratio)/pKF->mfLogScaleFactor);
-    if(nScale<0)
+    if(nScale < 0)
         nScale = 0;
-    else if(nScale>=pKF->mnScaleLevels)
-        nScale = pKF->mnScaleLevels-1;
+    else if(nScale >= pKF->mnScaleLevels)
+        nScale = pKF->mnScaleLevels - 1;
 
     return nScale;
 }
 
-int MapPoint::PredictScale(const float &currentDist, Frame* pF)
-{
+int MapPoint::PredictScale(const float &currentDist, Frame* pF) {
     float ratio;
     {
         unique_lock<mutex> lock(mMutexPos);
@@ -386,10 +378,10 @@ int MapPoint::PredictScale(const float &currentDist, Frame* pF)
     }
 
     int nScale = ceil(log(ratio)/pF->mfLogScaleFactor);
-    if(nScale<0)
+    if(nScale < 0)
         nScale = 0;
-    else if(nScale>=pF->mnScaleLevels)
-        nScale = pF->mnScaleLevels-1;
+    else if(nScale >= pF->mnScaleLevels)
+        nScale = pF->mnScaleLevels - 1;
 
     return nScale;
 }

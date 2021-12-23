@@ -91,7 +91,7 @@ public:
     MapPoint* GetMapPoint(const size_t &idx);
 
     // KeyPoint functions
-    std::vector<size_t> GetFeaturesInArea(const float &x, const float  &y, const float  &r) const;
+    std::vector<size_t> GetFeaturesInArea(const float &x, const float &y, const float &r) const;
     cv::Mat UnprojectStereo(int i);
 
     // Image
@@ -134,7 +134,7 @@ public:
 
     // Variables used by the tracking
     long unsigned int mnTrackReferenceForFrame;
-    long unsigned int mnFuseTargetForKF;
+    long unsigned int mnFuseTargetForKF;        // used in LocalMapping::SearchInNeighbors()
 
     // Variables used by the local mapping
     long unsigned int mnBALocalForKF;
