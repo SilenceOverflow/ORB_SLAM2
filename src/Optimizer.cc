@@ -745,7 +745,8 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
     vector<g2o::Sim3,Eigen::aligned_allocator<g2o::Sim3> > vCorrectedSwc(nMaxKFid + 1);
     vector<g2o::VertexSim3Expmap*> vpVertices(nMaxKFid + 1);
 
-    const int minFeat = 100;
+    // min covisible obs - threshold to reduce covisibility graph to essential graph
+    const int minFeat = 100;  
 
     // Set KeyFrame vertices
     for(size_t i = 0, iend = vpKFs.size(); i < iend; i++) {
@@ -769,6 +770,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
             VSim3->setEstimate(Siw);
         }
 
+        // fix the loop closure KF to fix the 7 degrees of gauge freedom
         if(pKF == pLoopKF)
             VSim3->setFixed(true);
 
@@ -833,15 +835,14 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
         KeyFrame* pParentKF = pKF->GetParent();
 
         // Spanning tree edge
-        if(pParentKF)
-        {
+        if(pParentKF) {
             int nIDj = pParentKF->mnId;
 
             g2o::Sim3 Sjw;
 
             LoopClosing::KeyFrameAndPose::const_iterator itj = NonCorrectedSim3.find(pParentKF);
 
-            if(itj!=NonCorrectedSim3.end())
+            if(itj != NonCorrectedSim3.end())
                 Sjw = itj->second;
             else
                 Sjw = vScw[nIDj];
@@ -859,16 +860,14 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
 
         // Loop edges
         const set<KeyFrame*> sLoopEdges = pKF->GetLoopEdges();
-        for(set<KeyFrame*>::const_iterator sit=sLoopEdges.begin(), send=sLoopEdges.end(); sit!=send; sit++)
-        {
+        for(set<KeyFrame*>::const_iterator sit = sLoopEdges.begin(), send = sLoopEdges.end(); sit != send; sit++) {
             KeyFrame* pLKF = *sit;
-            if(pLKF->mnId<pKF->mnId)
-            {
+            if(pLKF->mnId < pKF->mnId) {
                 g2o::Sim3 Slw;
 
                 LoopClosing::KeyFrameAndPose::const_iterator itl = NonCorrectedSim3.find(pLKF);
 
-                if(itl!=NonCorrectedSim3.end())
+                if(itl != NonCorrectedSim3.end())
                     Slw = itl->second;
                 else
                     Slw = vScw[pLKF->mnId];
@@ -885,21 +884,19 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
 
         // Covisibility graph edges
         const vector<KeyFrame*> vpConnectedKFs = pKF->GetCovisiblesByWeight(minFeat);
-        for(vector<KeyFrame*>::const_iterator vit=vpConnectedKFs.begin(); vit!=vpConnectedKFs.end(); vit++)
-        {
+        for(vector<KeyFrame*>::const_iterator vit = vpConnectedKFs.begin(); vit != vpConnectedKFs.end(); vit++) {
             KeyFrame* pKFn = *vit;
-            if(pKFn && pKFn!=pParentKF && !pKF->hasChild(pKFn) && !sLoopEdges.count(pKFn))
-            {
-                if(!pKFn->isBad() && pKFn->mnId<pKF->mnId)
-                {
-                    if(sInsertedEdges.count(make_pair(min(pKF->mnId,pKFn->mnId),max(pKF->mnId,pKFn->mnId))))
+            // constraint never added above
+            if(pKFn && pKFn != pParentKF && !pKF->hasChild(pKFn) && !sLoopEdges.count(pKFn)) {
+                if(!pKFn->isBad() && pKFn->mnId < pKF->mnId) {
+                    if(sInsertedEdges.count(make_pair(min(pKF->mnId, pKFn->mnId),max(pKF->mnId, pKFn->mnId))))
                         continue;
 
                     g2o::Sim3 Snw;
 
                     LoopClosing::KeyFrameAndPose::const_iterator itn = NonCorrectedSim3.find(pKFn);
 
-                    if(itn!=NonCorrectedSim3.end())
+                    if(itn != NonCorrectedSim3.end())
                         Snw = itn->second;
                     else
                         Snw = vScw[pKFn->mnId];
@@ -915,7 +912,7 @@ void Optimizer::OptimizeEssentialGraph(Map* pMap, KeyFrame* pLoopKF, KeyFrame* p
                 }
             }
         }
-    }
+    } // for each KF in map
 
     // Optimize!
     optimizer.initializeOptimization();

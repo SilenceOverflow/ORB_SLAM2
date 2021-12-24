@@ -58,10 +58,10 @@ public:
     void ComputeBoW();
 
     // Covisibility graph functions
-    void AddConnection(KeyFrame* pKF, const int &weight);
+    void AddConnection(KeyFrame* pKF, const int &weight); // add a new one or update with new weight
     void EraseConnection(KeyFrame* pKF);
     void UpdateConnections();
-    void UpdateBestCovisibles();
+    void UpdateBestCovisibles();    // only used by Add/Erase-Connection
     std::set<KeyFrame *> GetConnectedKeyFrames();
     std::vector<KeyFrame* > GetVectorCovisibleKeyFrames();
     std::vector<KeyFrame*> GetBestCovisibilityKeyFrames(const int &N);
@@ -85,8 +85,8 @@ public:
     void EraseMapPointMatch(const size_t &idx);
     void EraseMapPointMatch(MapPoint* pMP);
     void ReplaceMapPointMatch(const size_t &idx, MapPoint* pMP);
-    std::set<MapPoint*> GetMapPoints();
-    std::vector<MapPoint*> GetMapPointMatches();
+    std::set<MapPoint*> GetMapPoints(); // get set of MPs already associated with this KF (shouldn't be bad or null)
+    std::vector<MapPoint*> GetMapPointMatches(); // get vector of all MPs, could be nullptr or bad ones
     int TrackedMapPoints(const int &minObs);
     MapPoint* GetMapPoint(const size_t &idx);
 
@@ -108,8 +108,8 @@ public:
     // Compute Scene Depth (q=2 median). Used in monocular.
     float ComputeSceneMedianDepth(const int q);
 
-    static bool weightComp( int a, int b){
-        return a>b;
+    static bool weightComp(int a, int b){
+        return a > b;
     }
 
     static bool lId(KeyFrame* pKF1, KeyFrame* pKF2){
@@ -208,8 +208,8 @@ protected:
 
     // Grid over the image to speed up feature matching
     std::vector< std::vector <std::vector<size_t> > > mGrid;
-    // Covisibles
-    std::map<KeyFrame*,int> mConnectedKeyFrameWeights;
+    // Covisibles, descending Order
+    std::map<KeyFrame*, int> mConnectedKeyFrameWeights;
     std::vector<KeyFrame*> mvpOrderedConnectedKeyFrames;
     std::vector<int> mvOrderedWeights;
 
