@@ -256,13 +256,12 @@ void System::DeactivateLocalizationMode() {
 }
 
 bool System::MapChanged() {
-    static int n=0;
+    static int n = 0;
     int curn = mpMap->GetLastBigChangeIdx();
-    if(n<curn) {
-        n=curn;
+    if(n < curn) {
+        n = curn;
         return true;
-    }
-    else
+    } else
         return false;
 }
 
